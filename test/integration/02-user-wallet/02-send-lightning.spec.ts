@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "crypto"
 import { getUserLimits } from "@config/app"
-import { getActiveLnd, getInvoiceAttempt } from "@services/lnd/utils"
+import { getActiveLnd, getInvoiceAttempt, getLndFromPubkey } from "@services/lnd/utils"
 import { baseLogger } from "@services/logger"
 import { InvoiceUser } from "@services/mongoose/schema"
 import { getHash, sleep } from "@core/utils"
@@ -19,6 +19,9 @@ import {
   settleHodlInvoice,
   waitFor,
   waitUntilChannelBalanceSyncAll,
+  openChannelTesting,
+  lnd1,
+  lnd2,
 } from "test/helpers"
 import * as Wallets from "@app/wallets"
 import { addInvoice } from "@app/wallets/add-invoice-for-wallet"
@@ -51,6 +54,9 @@ import {
 import { LnPaymentsRepository } from "@services/mongoose/ln-payments"
 import { LndService } from "@services/lnd"
 
+import { getChannels } from "ln-service"
+import { payViaPaymentRequest, getPayments } from "lightning"
+
 const date = Date.now() + 1000 * 60 * 60 * 24 * 8
 // required to avoid oldEnoughForWithdrawal validation
 jest.spyOn(global.Date, "now").mockImplementation(() => new Date(date).valueOf())
@@ -82,6 +88,58 @@ afterAll(() => {
 })
 
 describe("UserWallet - Lightning Pay", () => {
+  const lndService = LndService()
+  if (lndService instanceof Error) return lndService
+
+  it.skip("open channel", async () => {
+    let { channels } = await getChannels({ lnd: lndService.defaultLnd() })
+    console.log(channels.map((chan) => chan.partner_public_key))
+    const socket = `lnd2:9735`
+    await openChannelTesting({
+      lnd: lnd1,
+      lndPartner: lnd2,
+      socket,
+    })
+    ;({ channels } = await getChannels({ lnd: lndService.defaultLnd() }))
+    console.log(channels.map((chan) => chan.partner_public_key))
+  })
+
+  it.skip("Do MPP", async () => {
+    const lnd = lndService.defaultLnd()
+
+    const target = getLndFromPubkey({
+      pubkey: "02a84020ed99619f3a467dc04cd3fae7aff7216f5681dd55bb20a2381ae216bfab",
+    })
+    console.log(!!target.lnd)
+    // const { request } = await createInvoice({ tokens: 1_200_000, lnd: target.lnd })
+    const request =
+      "lnbcrt12m1ps6l0p0pp5yu7zmux2j65g3n4r6vdr08qfhw0gyh0nmx5fn7q4jtd6y7a2a5fqdqqcqzpuxqr23ssp5a6gj54eq7mndk8672fzf79fddlh48erxyt2g3lf54982apvc9mls9qyyssq89dl2zm6fjzk3hsd6f3wej45c3t7gh8v2dw9nda74m5f863c85s52zglgxlf7309ae9vmy0crtn64nknly5vdkg40tr2qqr4ktscwqcqxykz60"
+    const result = await payViaPaymentRequest({
+      lnd,
+      request,
+      max_paths: 2,
+    })
+  })
+
+  it.skip("get payments", async () => {
+    const lnd = lndService.defaultLnd()
+
+    // const target = getLndFromPubkey({
+    //   pubkey: "02a84020ed99619f3a467dc04cd3fae7aff7216f5681dd55bb20a2381ae216bfab",
+    // })
+
+    // const { payments: failedPayments } = await getFailedPayments({ lnd })
+    const { payments } = await getPayments({ lnd })
+    // const id = "face7093e779523e4b7594cb02aa6a3a5e9ab2fd90d7d2ead89de796c388ea2c"
+    // const destination =
+    //   "025e2abda7cddceacb8c7820a1064930e3cc406c228448966c3c7045b45e154ff1"
+    // const paymentsFiltered = payments.filter((p) => p.destination == destination)
+    for (const attempt of payments[0]?.attempts || []) {
+    }
+  })
+
+  // ===================================
+
   it("sends to another Galoy user with memo", async () => {
     const memo = "invoiceMemo"
 
