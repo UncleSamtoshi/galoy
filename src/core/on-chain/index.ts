@@ -1,5 +1,5 @@
 import assert from "assert"
-import { getChainBalance, getChainFeeEstimate, sendToChainAddress } from "lightning"
+import { getChainBalance, sendToChainAddress } from "lightning"
 
 import { getActiveOnchainLnd } from "@services/lnd/utils"
 import { ledger } from "@services/mongodb"
@@ -35,7 +35,7 @@ import { TwoFANewCodeNeededError } from "@domain/twoFA"
 import { getCurrentPrice } from "@app/prices"
 import { NotificationsService } from "@services/notifications"
 import { OnChainService } from "@services/lnd/onchain-service"
-import { TxDecoder } from "@domain/bitcoin/onchain"
+import { checkedToOnChainAddress, TxDecoder } from "@domain/bitcoin/onchain"
 
 export const OnChainMixin = (superclass) =>
   class extends superclass {
@@ -241,20 +241,24 @@ export const OnChainMixin = (superclass) =>
 
         const { chain_balance: onChainBalance } = await getChainBalance({ lnd })
 
-        let estimatedFee, id, amountToSend
+        let id, amountToSend
 
         const sendTo = [{ address, tokens: checksAmount }]
         const targetConfs = targetConfirmations > 0 ? targetConfirmations : 1
 
-        try {
-          ;({ fee: estimatedFee } = await getChainFeeEstimate({
-            lnd,
-            send_to: sendTo,
-            target_confirmations: targetConfs,
-          }))
-        } catch (err) {
+        const checkedAddress = checkedToOnChainAddress(address)
+        if (checkedAddress instanceof Error) throw checkedAddress
+
+        const estimatedFee = await Wallets.getOnChainFeeByWalletId({
+          walletId: this.user.id,
+          amount: checksAmount,
+          address: checkedAddress,
+          targetConfirmations: targetConfs,
+        })
+
+        if (estimatedFee instanceof Error) {
           const error = `Unable to estimate fee for on-chain transaction`
-          onchainLogger.error({ err, sendTo, success: false }, error)
+          onchainLogger.error({ err: estimatedFee, sendTo, success: false }, error)
           throw new LoggedError(error)
         }
 
