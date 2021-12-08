@@ -1,5 +1,5 @@
 import assert from "assert"
-import { getChainBalance, sendToChainAddress } from "lightning"
+import { sendToChainAddress } from "lightning"
 
 import { getActiveOnchainLnd } from "@services/lnd/utils"
 import { ledger } from "@services/mongodb"
@@ -239,7 +239,23 @@ export const OnChainMixin = (superclass) =>
 
         const { lnd } = getActiveOnchainLnd()
 
-        const { chain_balance: onChainBalance } = await getChainBalance({ lnd })
+        const getOnChainBalance = async (): Promise<Satoshis> => {
+          const onChainService = OnChainService(TxDecoder(BTC_NETWORK))
+          if (onChainService instanceof Error) {
+            onchainLogger.fatal({ err: onChainService })
+            return toSats(0)
+          }
+
+          const onChainBalance = await onChainService.getBalance()
+          if (onChainBalance instanceof Error) {
+            onchainLogger.fatal({ err: onChainBalance })
+            return toSats(0)
+          }
+
+          return onChainBalance
+        }
+
+        const onChainBalance = await getOnChainBalance()
 
         let id, amountToSend
 
