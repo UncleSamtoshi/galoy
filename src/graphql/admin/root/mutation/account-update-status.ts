@@ -3,7 +3,6 @@ import { GT } from "@graphql/index"
 import AccountDetailPayload from "@graphql/admin/types/payload/account-detail"
 import AccountStatus from "@graphql/admin/types/scalar/account-status"
 import { updateAccountStatus } from "@app/accounts/update-account-status"
-import { mapError } from "@graphql/error-map"
 
 const AccountUpdateStatusInput = new GT.Input({
   name: "AccountUpdateStatusInput",
@@ -32,7 +31,7 @@ const AccountUpdateStatusMutation = GT.Field({
 
     const account = await updateAccountStatus({ id: uid, status })
     if (account instanceof Error) {
-      return { errors: [{ message: mapError(account).message }] }
+      return { errors: [{ message: account.message }] }
     }
     return { errors: [], accountDetails: account }
   },

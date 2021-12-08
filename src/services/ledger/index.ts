@@ -24,19 +24,22 @@ import {
   toLiabilitiesWalletId,
   toWalletId,
 } from "@domain/ledger"
-import { lndAccountingPath, bankOwnerAccountPath } from "./accounts"
+import { lndAccountingPath, getBankOwnerWalletId } from "./accounts"
 
 type LoadLedgerParams = {
-  bankOwnerWalletResolver: () => Promise<string>
-  dealerWalletResolver: () => Promise<string>
+  bankOwnerWalletResolver: () => Promise<WalletId>
+  dealerWalletResolver: () => Promise<WalletId>
+  funderWalletResolver: () => Promise<WalletId>
 }
 
 export const loadLedger = ({
   bankOwnerWalletResolver,
   dealerWalletResolver,
+  funderWalletResolver,
 }: LoadLedgerParams) => {
   accounts.setbankOwnerWalletResolver(bankOwnerWalletResolver)
   accounts.setdealerWalletResolver(dealerWalletResolver)
+  accounts.setFunderWalletResolver(funderWalletResolver)
   return {
     ...accounts,
     ...queries,
@@ -131,7 +134,7 @@ export const LedgerService = (): ILedgerService => {
     })
   }
 
-  const getAccountBalance = async (
+  const getWalletBalance = async (
     walletId: WalletId,
   ): Promise<Satoshis | LedgerError> => {
     const liabilitiesWalletId = toLiabilitiesWalletId(walletId)
@@ -303,7 +306,7 @@ export const LedgerService = (): ILedgerService => {
         .debit(lndAccountingPath, sats, metadata)
 
       if (fee > 0) {
-        const bankOwnerPath = await bankOwnerAccountPath()
+        const bankOwnerPath = toLiabilitiesWalletId(await getBankOwnerWalletId())
         entry.credit(bankOwnerPath, fee, metadata)
       }
 
@@ -344,7 +347,7 @@ export const LedgerService = (): ILedgerService => {
         .debit(lndAccountingPath, sats, metadata)
 
       if (fee > 0) {
-        const bankOwnerPath = await bankOwnerAccountPath()
+        const bankOwnerPath = toLiabilitiesWalletId(await getBankOwnerWalletId())
         entry.credit(bankOwnerPath, fee, metadata)
       }
 
@@ -510,7 +513,7 @@ export const LedgerService = (): ILedgerService => {
     })
   }
 
-  const addUsernameIntraledgerTxSend = async ({
+  const addWalletIdIntraledgerTxSend = async ({
     walletId,
     description,
     sats,
@@ -521,8 +524,8 @@ export const LedgerService = (): ILedgerService => {
     payerUsername,
     recipientUsername,
     memoPayer,
-  }: AddUsernameIntraledgerTxSendArgs): Promise<LedgerJournal | LedgerError> => {
-    const metadata: AddUsernameIntraledgerTxSendMetadata = {
+  }: addWalletIdIntraledgerTxSendArgs): Promise<LedgerJournal | LedgerError> => {
+    const metadata: addWalletIdIntraledgerTxSendMetadata = {
       type: LedgerTransactionType.IntraLedger,
       pending: false,
       fee,
@@ -614,7 +617,7 @@ export const LedgerService = (): ILedgerService => {
     getLiabilityTransactionsForContactUsername,
     listPendingPayments,
     getPendingPaymentsCount,
-    getAccountBalance,
+    getWalletBalance,
     twoFATxVolumeSince,
     withdrawalTxVolumeSince,
     intraledgerTxVolumeSince,
@@ -626,7 +629,7 @@ export const LedgerService = (): ILedgerService => {
     addLnTxSend,
     addLnIntraledgerTxSend,
     addOnChainIntraledgerTxSend,
-    addUsernameIntraledgerTxSend,
+    addWalletIdIntraledgerTxSend,
     settlePendingLnPayments,
     voidLedgerTransactionsForJournal,
   }

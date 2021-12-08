@@ -28,7 +28,7 @@ type LedgerJournal = {
 // Differentiate fields depending on what 'type' we have (see domain/wallets/index.types.d.ts)
 type LedgerTransaction = {
   readonly id: LedgerTransactionId
-  readonly walletId: WalletId | null // FIXME create a subclass so that this field is always set for liabilities wallets
+  readonly walletId: WalletId | null // FIXME FIXME create a subclass so that this field is always set for liabilities wallets
   readonly type: LedgerTransactionType
   readonly debit: Satoshis
   readonly credit: Satoshis
@@ -114,9 +114,7 @@ type AddOnChainIntraledgerTxSendArgs = AddIntraLedgerTxSendArgs & {
   sendAll: boolean
 }
 
-type AddUsernameIntraledgerTxSendArgs = AddIntraLedgerTxSendArgs & {
-  recipientUsername: Username
-}
+type addWalletIdIntraledgerTxSendArgs = AddIntraLedgerTxSendArgs
 
 type AddLnFeeReeimbursementReceiveArgs = {
   walletId: WalletId
@@ -159,7 +157,7 @@ interface ILedgerService {
 
   getPendingPaymentsCount(WalletId: WalletId): Promise<number | LedgerServiceError>
 
-  getAccountBalance(WalletId: WalletId): Promise<Satoshis | LedgerServiceError>
+  getWalletBalance(WalletId: WalletId): Promise<Satoshis | LedgerServiceError>
 
   twoFATxVolumeSince({
     walletId,
@@ -215,8 +213,8 @@ interface ILedgerService {
     args: AddOnChainIntraledgerTxSendArgs,
   ): Promise<LedgerJournal | LedgerServiceError>
 
-  addUsernameIntraledgerTxSend(
-    args: AddUsernameIntraledgerTxSendArgs,
+  addWalletIdIntraledgerTxSend(
+    args: AddIntraLedgerTxSendArgs,
   ): Promise<LedgerJournal | LedgerServiceError>
 
   settlePendingLnPayments(paymentHash: PaymentHash): Promise<boolean | LedgerServiceError>
