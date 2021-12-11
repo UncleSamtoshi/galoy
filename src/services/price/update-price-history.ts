@@ -3,7 +3,7 @@ import ccxt from "ccxt"
 import moment from "moment"
 import { baseLogger } from "@services/logger"
 import { PriceHistory } from "./schema"
-import { SATS_PER_BTC } from "@config/app"
+import { SATS_PER_BTC } from "@domain/bitcoin"
 
 const pair = "BTC/USD"
 const exchange = "bitfinex"
