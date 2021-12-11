@@ -3,7 +3,7 @@ import { getUserLimits } from "@config/app"
 import { getActiveLnd, getInvoiceAttempt } from "@services/lnd/utils"
 import { baseLogger } from "@services/logger"
 import { InvoiceUser } from "@services/mongoose/schema"
-import { sleep } from "@core/utils"
+import { sleep } from "@app/utils"
 import {
   cancelHodlInvoice,
   checkIsBalanced,
