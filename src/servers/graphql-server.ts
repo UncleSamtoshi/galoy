@@ -31,6 +31,7 @@ import {
   ENDUSER_ALIAS,
 } from "@services/tracing"
 import { AccountsRepository } from "@services/mongoose"
+import { LightningUserWallet } from "@core/lightning/wallet"
 
 const graphqlLogger = baseLogger.child({
   module: "graphql",
@@ -65,7 +66,7 @@ const sessionContext = ({ token, ips, body, apiKey, apiSecret }) => {
     ip = ips
   }
 
-  let wallet, user
+  let wallet: LightningUserWallet | null, user: UserType | null
 
   // TODO move from id: uuidv4() to a Jaeger standard
   const logger = graphqlLogger.child({ token, id: uuidv4(), body })

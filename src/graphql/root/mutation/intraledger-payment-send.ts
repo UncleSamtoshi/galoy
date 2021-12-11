@@ -23,7 +23,11 @@ const IntraLedgerPaymentSendMutation = GT.Field({
   args: {
     input: { type: GT.NonNull(IntraLedgerPaymentSendInput) },
   },
-  resolve: async (_, args, { user, logger }) => {
+  resolve: async (
+    _: void,
+    args,
+    { domainUser, logger }: { domainUser: User; logger: Logger },
+  ) => {
     const { walletId, recipientWalletId, amount, memo } = args.input
     for (const input of [walletId, recipientWalletId, amount, memo]) {
       if (input instanceof Error) {
@@ -60,7 +64,7 @@ const IntraLedgerPaymentSendMutation = GT.Field({
       memo,
       amount,
       payerWalletId: walletId,
-      payerUserId: user.id,
+      payerUserId: domainUser.id,
       logger,
     })
     if (status instanceof Error) {
