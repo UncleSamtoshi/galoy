@@ -420,7 +420,6 @@ const resolvers = {
 
     // FIXME test
     testMessage: async (_, __, { user, logger }) => {
-      // throw new LoggedError("test error")
       await sendNotification({
         user,
         title: "Title",

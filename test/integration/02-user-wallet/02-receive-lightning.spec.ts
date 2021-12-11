@@ -1,12 +1,12 @@
 import { ledger } from "@services/mongodb"
 import { baseLogger } from "@services/logger"
-import { getHash } from "@core/utils"
 import {
   checkIsBalanced,
   getAndCreateUserWallet,
   lndOutside1,
   pay,
   getBTCBalance,
+  getHash,
 } from "test/helpers"
 import { MEMO_SHARING_SATS_THRESHOLD } from "@config/app"
 import * as Wallets from "@app/wallets"

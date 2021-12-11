@@ -29,11 +29,12 @@ import {
 import { ledger } from "@services/mongodb"
 import { PaymentInitiationMethod, TxStatus } from "@domain/wallets"
 import * as Wallets from "@app/wallets"
-import { TwoFAError, TransactionRestrictedError } from "@core/error"
 import { getBTCBalance, getRemainingTwoFALimit } from "test/helpers/wallet"
 import { NotificationType } from "@domain/notifications"
 import { toTargetConfs } from "@domain/bitcoin"
 import { LedgerTransactionType } from "@domain/ledger"
+import { TransactionRestrictedError } from "@graphql/error"
+import { TwoFAError } from "@domain/twoFA"
 
 jest.mock("@services/notifications/notification")
 

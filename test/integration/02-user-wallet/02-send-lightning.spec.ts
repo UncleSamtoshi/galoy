@@ -3,7 +3,7 @@ import { getUserLimits } from "@config/app"
 import { getActiveLnd, getInvoiceAttempt } from "@services/lnd/utils"
 import { baseLogger } from "@services/logger"
 import { InvoiceUser } from "@services/mongoose/schema"
-import { getHash, sleep } from "@core/utils"
+import { sleep } from "@core/utils"
 import {
   cancelHodlInvoice,
   checkIsBalanced,
@@ -19,6 +19,7 @@ import {
   settleHodlInvoice,
   waitFor,
   waitUntilChannelBalanceSyncAll,
+  getHash,
 } from "test/helpers"
 import * as Wallets from "@app/wallets"
 import { addInvoice } from "@app/wallets/add-invoice-for-wallet"

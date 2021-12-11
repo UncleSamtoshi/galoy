@@ -14,12 +14,12 @@ import {
   pay,
   getInvoice,
   RANDOM_ADDRESS,
+  getHash,
 } from "test/helpers"
 import * as Wallets from "@app/wallets"
 import { toSats } from "@domain/bitcoin"
 import { LedgerTransactionType } from "@domain/ledger"
 import { addInvoice } from "@app/wallets"
-import { getHash } from "@core/utils"
 import { ledger } from "@services/mongodb"
 import { getTitle } from "@services/notifications/payment"
 import { TxStatus } from "@domain/wallets"
