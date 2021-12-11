@@ -1,4 +1,4 @@
-import { CSVAccountExport } from "@core/csv-account-export"
+import { CSVAccountExport } from "@app/wallets/csv-account-export"
 import { toLiabilitiesWalletId } from "@domain/ledger"
 
 export const getCSVForWallets = async (

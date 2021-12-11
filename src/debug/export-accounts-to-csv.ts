@@ -1,7 +1,7 @@
 import { createObjectCsvWriter } from "csv-writer"
 import * as _ from "lodash"
 
-import { CSVAccountExport } from "@core/csv-account-export"
+import { CSVAccountExport } from "@app/wallets/csv-account-export"
 
 import { ledger, setupMongoConnectionSecondary } from "@services/mongodb"
 import { Transaction, User } from "@services/mongoose/schema"

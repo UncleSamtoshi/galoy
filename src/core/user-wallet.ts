@@ -5,7 +5,7 @@ import { ledger } from "@services/mongodb"
 
 import { DbError, TwoFAError } from "./error"
 import { Balances } from "./interface"
-import { CSVAccountExport } from "./csv-account-export"
+import { CSVAccountExport } from "../app/wallets/csv-account-export"
 import { getGaloyInstanceName } from "@config/app"
 import { generateSecret, verifyToken } from "node-2fa"
 import { sendNotification } from "@services/notifications/notification"
