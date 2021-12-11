@@ -381,17 +381,6 @@ UserSchema.statics.getVolume = async function ({
   }
 }
 
-// FIXME: for onchain wallet from multiple wallet
-// refactor with bitcoind wallet
-UserSchema.virtual("onchain_addresses").get(function (this: typeof UserSchema) {
-  return this.onchain.map((item) => item.address)
-})
-
-// return the list of nodes that this user has address associated to
-UserSchema.virtual("onchain_pubkey").get(function (this: typeof UserSchema) {
-  return _.uniq(this.onchain.map((item) => item.pubkey))
-})
-
 // user is considered active if there has been one transaction of more than 1000 sats in the last 30 days
 // eslint-disable-next-line no-unused-vars
 UserSchema.virtual("userIsActive").get(async function (this: typeof UserSchema) {
