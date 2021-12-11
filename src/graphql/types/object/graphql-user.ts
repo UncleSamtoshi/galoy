@@ -14,7 +14,7 @@ import Username from "../scalar/username"
 
 import * as Accounts from "@app/accounts"
 import * as Users from "@app/users"
-import { UnknownClientError } from "@core/error"
+import { UnknownClientError } from "@graphql/error"
 
 const GraphQLUser = new GT.Object({
   name: "User",
@@ -56,7 +56,7 @@ const GraphQLUser = new GT.Object({
       args: {
         username: { type: GT.NonNull(Username) },
       },
-      resolve: async (source, args, { domainUser }) => {
+      resolve: async (source, args, { domainUser, logger }) => {
         const { username } = args
         if (username instanceof Error) {
           throw username
@@ -66,7 +66,7 @@ const GraphQLUser = new GT.Object({
           contactUsername: args.username,
         })
         if (contact instanceof Error) {
-          throw new UnknownClientError("Something went wrong") // TODO: Map error
+          throw new UnknownClientError({ message: "Unknown Client error", logger }) // TODO: Map error
         }
         return contact
       },
