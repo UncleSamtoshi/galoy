@@ -1,8 +1,7 @@
-import { setupMongoConnection } from "@services/mongodb"
-import { User } from "@services/mongoose/schema"
-import { baseLogger } from "@services/logger"
-
+import { getActiveUser } from "@app/users/active-users"
 import { WalletFactory } from "@core/wallet-factory"
+import { baseLogger } from "@services/logger"
+import { setupMongoConnection } from "@services/mongodb"
 
 const logger = baseLogger.child({ module: "dailyBalanceNotification" })
 
@@ -16,7 +15,8 @@ const main = async () => {
 }
 
 export const sendBalanceToUsers = async () => {
-  const users = await User.getActiveUsers({})
+  const users = await getActiveUser()
+  if (users instanceof Error) throw users
 
   for (const user of users) {
     const userWallet = await WalletFactory({ user, logger })

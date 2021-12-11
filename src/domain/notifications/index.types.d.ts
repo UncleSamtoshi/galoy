@@ -42,4 +42,5 @@ interface INotificationsService {
   priceUpdate: (UsdPerSat: number) => void
   lnInvoicePaid: (arg: LnInvoicePaidArgs) => void
   intraLedgerPaid(args: IntraLedgerArgs): Promise<void | NotificationsServiceError>
+  sendBalance({ walletId, user }: { walletId: WalletId; user: UserType }): Promise<void>
 }

@@ -3,6 +3,7 @@ import { ledger } from "@services/mongodb"
 import { User } from "@services/mongoose/schema"
 import { sendBalanceToUsers } from "@servers/daily-balance-notification"
 import { getCurrentPrice } from "@app/prices"
+import { getActiveUser } from "@app/users/active-users"
 
 jest.mock("@services/notifications/notification")
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -26,7 +27,9 @@ describe("notification", () => {
   describe("sendNotification", () => {
     it("sends daily balance to active users", async () => {
       await sendBalanceToUsers()
-      const numActiveUsers = (await User.getActiveUsers()).length
+      const users = await getActiveUser()
+      if (users instanceof Error) throw users
+      const numActiveUsers = users.length
       expect(sendNotification.mock.calls.length).toBe(numActiveUsers)
       for (const [call] of sendNotification.mock.calls) {
         const balance = await ledger.getAccountBalance(call.user.accountPath)
