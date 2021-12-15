@@ -1,8 +1,7 @@
-import { ledger } from "@services/mongodb"
-
-import { User } from "@services/mongoose/schema"
-import { sendBalanceToUsers } from "@servers/daily-balance-notification"
 import { getCurrentPrice } from "@app/prices"
+import { sendBalanceToUsers } from "@servers/daily-balance-notification"
+import { LedgerService } from "@services/ledger"
+import { User } from "@services/mongoose/schema"
 
 jest.mock("@services/notifications/notification")
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -29,7 +28,8 @@ describe("notification", () => {
       const numActiveUsers = (await User.getActiveUsers()).length
       expect(sendNotification.mock.calls.length).toBe(numActiveUsers)
       for (const [call] of sendNotification.mock.calls) {
-        const balance = await ledger.getAccountBalance(call.user.accountPath)
+        const balance = await LedgerService().getAccountBalance(call.user.id)
+        if (balance instanceof Error) throw balance
 
         const expectedUsdBalance = (price * balance).toLocaleString("en", {
           maximumFractionDigits: 2,

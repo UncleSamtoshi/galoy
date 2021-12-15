@@ -1,19 +1,19 @@
-import { ledger } from "@services/mongodb"
-import { baseLogger } from "@services/logger"
+import { PaymentStatusChecker } from "@app/lightning"
+import * as Wallets from "@app/wallets"
+import { addInvoice, addInvoiceNoAmount } from "@app/wallets/add-invoice-for-wallet"
+import { MEMO_SHARING_SATS_THRESHOLD } from "@config/app"
 import { getHash } from "@core/utils"
+import { toSats } from "@domain/bitcoin"
+import { PaymentInitiationMethod } from "@domain/wallets"
+import { baseLogger } from "@services/logger"
 import {
   checkIsBalanced,
   getAndCreateUserWallet,
+  getBTCBalance,
   lndOutside1,
   pay,
-  getBTCBalance,
 } from "test/helpers"
-import { MEMO_SHARING_SATS_THRESHOLD } from "@config/app"
-import * as Wallets from "@app/wallets"
-import { PaymentInitiationMethod } from "@domain/wallets"
-import { addInvoice, addInvoiceNoAmount } from "@app/wallets/add-invoice-for-wallet"
-import { toSats } from "@domain/bitcoin"
-import { PaymentStatusChecker } from "@app/lightning"
+import { getTransactionByHash } from "test/helpers/ledger"
 
 let userWallet1
 let initBalance1
@@ -70,7 +70,7 @@ describe("UserWallet - Lightning", () => {
       }),
     ).not.toBeInstanceOf(Error)
 
-    const dbTx = await ledger.getTransactionByHash(hash)
+    const dbTx = await getTransactionByHash(hash)
     expect(dbTx.sats).toBe(sats)
     expect(dbTx.memo).toBe(memo)
     expect(dbTx.pending).toBe(false)
@@ -124,7 +124,7 @@ describe("UserWallet - Lightning", () => {
       }),
     ).not.toBeInstanceOf(Error)
 
-    const dbTx = await ledger.getTransactionByHash(hash)
+    const dbTx = await getTransactionByHash(hash)
     expect(dbTx.sats).toBe(sats)
     expect(dbTx.memo).toBe("")
     expect(dbTx.pending).toBe(false)
@@ -160,7 +160,7 @@ describe("UserWallet - Lightning", () => {
     ).not.toBeInstanceOf(Error)
 
     // check that spam memo is persisted to database
-    const dbTx = await ledger.getTransactionByHash(hash)
+    const dbTx = await getTransactionByHash(hash)
     expect(dbTx.memo).toBe(memo)
 
     // check that spam memo is filtered from transaction description

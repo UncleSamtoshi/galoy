@@ -575,6 +575,17 @@ export const LedgerService = (): ILedgerService => {
     }
   }
 
+  const getWalletIdByTransactionHash = async (hash): Promise<WalletId | null> => {
+    const bankOwnerPath = await bankOwnerAccountPath()
+    const entry = await Transaction.findOne({
+      account_path: liabilitiesMainAccount,
+      accounts: { $ne: bankOwnerPath },
+      hash,
+    })
+    const walletId = accounts.resolveWalletId(entry.account_path)
+    return walletId
+  }
+
   return {
     getTransactionById,
     getTransactionsByHash,
@@ -597,6 +608,7 @@ export const LedgerService = (): ILedgerService => {
     addUsernameIntraledgerTxSend,
     settlePendingLnPayments,
     voidLedgerTransactionsForJournal,
+    getWalletIdByTransactionHash,
   }
 }
 

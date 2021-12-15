@@ -1,7 +1,6 @@
 import assert from "assert"
 
 import { User } from "@services/mongoose/schema"
-import { ledger } from "@services/mongodb"
 
 import { DbError, TwoFAError } from "./error"
 import { Balances } from "./interface"
@@ -10,6 +9,7 @@ import { getGaloyInstanceName } from "@config/app"
 import { generateSecret, verifyToken } from "node-2fa"
 import { sendNotification } from "@services/notifications/notification"
 import * as Wallets from "@app/wallets"
+import { LedgerService } from "@services/ledger"
 
 export abstract class UserWallet {
   static lastPrice: number
@@ -56,20 +56,19 @@ export abstract class UserWallet {
     }
 
     // TODO: run this code in parrallel
-    for (const { id } of this.user.currencies) {
-      const balance = await ledger.getAccountBalance(this.user.accountPath, {
-        currency: id,
-      })
+    // for (const { id } of this.user.currencies) {
+    const balance = await LedgerService().getAccountBalance(this.user.accountPath as LiabilitiesAccountId)
+    if (balance instanceof Error) throw balance
 
-      // the dealer is the only one that is allowed to be short USD
-      if (this.user.role === "dealer" && id === "USD") {
-        assert(balance <= 0)
-      } else {
-        assert(balance >= 0)
-      }
+    // the dealer is the only one that is allowed to be short USD
+    // if (this.user.role === "dealer" && id === "USD") {
+    //   assert(balance <= 0)
+    // } else {
+    assert(balance >= 0)
+    // }
 
-      balances[id] = balance
-    }
+    balances["BTC"] = balance
+    // }
 
     const priceMap = [
       {
