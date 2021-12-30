@@ -15,7 +15,6 @@ import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core"
 import { startServer, killServer } from "test/helpers/integration-server"
 
 jest.mock("@services/twilio", () => require("test/mocks/twilio"))
-jest.setTimeout(5 * 60 * 1000)
 
 let apolloClient: ApolloClient<NormalizedCacheObject>, disposeClient: () => void
 const receivingUsername = "user0"
