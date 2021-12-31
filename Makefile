@@ -50,6 +50,9 @@ watch-compile:
 integration:
 	yarn test:integration
 
+end-to-end:
+	yarn test:end-to-end
+
 reset-integration: reset-deps integration
 
 integration-in-ci:

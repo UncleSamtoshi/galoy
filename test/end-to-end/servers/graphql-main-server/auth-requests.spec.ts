@@ -6,7 +6,7 @@ import {
   lndOutside2,
 } from "test/helpers"
 import { createApolloClient } from "test/helpers/apollo-client"
-import { startServer, killServer } from "test/helpers/integration-server"
+// import { startServer, killServer } from "test/helpers/integration-server"
 import LN_INVOICE_CREATE from "./mutations/ln-invoice-create.gql"
 import LN_INVOICE_FEE_PROBE from "./mutations/ln-invoice-fee-probe.gql"
 import LN_INVOICE_PAYMENT_SEND from "./mutations/ln-invoice-payment-send.gql"
@@ -21,7 +21,7 @@ let apolloClient, disposeClient, walletId
 const { phone, code } = yamlConfig.test_accounts[3]
 
 beforeAll(async () => {
-  await startServer()
+  // await startServer()
     ; ({ apolloClient, disposeClient } = createApolloClient())
   const input = { phone, code: `${code}` }
   const result = await apolloClient.mutate({ mutation: USER_LOGIN, variables: { input } })
@@ -39,7 +39,7 @@ beforeEach(async () => {
 
 afterAll(async () => {
   disposeClient()
-  await killServer()
+  // await killServer()
 })
 
 describe("graphql", () => {

@@ -4,7 +4,7 @@ import * as jwt from "jsonwebtoken"
 import USER_REQUEST_AUTH_CODE from "./mutations/user-request-auth-code.gql"
 import USER_LOGIN from "./mutations/user-login.gql"
 import { clearAccountLocks, clearLimiters } from "test/helpers"
-import { startServer, killServer } from "test/helpers/integration-server"
+// import { startServer, killServer } from "test/helpers/integration-server"
 import { createApolloClient } from "test/helpers/apollo-client"
 
 jest.mock("@services/twilio", () => require("test/mocks/twilio"))
@@ -14,7 +14,7 @@ const { phone, code } = yamlConfig.test_accounts[9]
 
 beforeAll(async () => {
   correctCode = `${code}`
-  await startServer()
+  // await startServer()
     ; ({ apolloClient, disposeClient } = createApolloClient())
 })
 
@@ -25,7 +25,7 @@ beforeEach(async () => {
 
 afterAll(async () => {
   disposeClient()
-  await killServer()
+  // await killServer()
 })
 
 describe("graphql", () => {

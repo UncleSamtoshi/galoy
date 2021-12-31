@@ -12,7 +12,7 @@ import LN_INVOICE_PAYMENT_SEND from "./mutations/ln-invoice-payment-send.gql"
 import crypto from "crypto"
 import { createApolloClient, getSubscriptionNext } from "test/helpers/apollo-client"
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core"
-import { startServer, killServer } from "test/helpers/integration-server"
+// import { startServer, killServer } from "test/helpers/integration-server"
 
 jest.mock("@services/twilio", () => require("test/mocks/twilio"))
 
@@ -22,7 +22,7 @@ let recievingWalletId
 const { phone, code } = yamlConfig.test_accounts[4]
 
 beforeAll(async () => {
-  await startServer()
+  // await startServer()
   ;({ apolloClient, disposeClient } = createApolloClient())
   const input = { phone, code: `${code}` }
   const result = await apolloClient.mutate({ mutation: USER_LOGIN, variables: { input } })
@@ -38,7 +38,7 @@ beforeEach(async () => {
 
 afterAll(async () => {
   disposeClient()
-  await killServer()
+  // await killServer()
 })
 
 describe("galoy-pay", () => {

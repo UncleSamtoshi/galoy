@@ -1,12 +1,12 @@
 import { yamlConfig } from "@config/app"
+import { LightningUserWallet } from "@core/lightning/wallet"
 import { WalletFactory } from "@core/wallet-factory"
 import { CouldNotFindUserFromPhoneError } from "@domain/errors"
 import { baseLogger } from "@services/logger"
 import { UsersRepository } from "@services/mongoose"
 import { User } from "@services/mongoose/schema"
 
-export const getAndCreateUserWallet = async (index: number) => {
-  const entry = yamlConfig.test_accounts[index]
+export const createUserWallet = async (entry: any) : Promise<LightningUserWallet> => {
   const phone = entry.phone as PhoneNumber
 
   const users = UsersRepository()
@@ -40,4 +40,9 @@ export const getAndCreateUserWallet = async (index: number) => {
   const user = await User.findOne({ _id: uid })
   const userWallet = await WalletFactory({ user, logger: baseLogger })
   return userWallet
+}
+
+export const getAndCreateUserWallet = async (index: number) => {
+  const entry = yamlConfig.test_accounts[index]
+  return createUserWallet(entry)
 }
