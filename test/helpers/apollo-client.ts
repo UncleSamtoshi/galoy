@@ -5,13 +5,12 @@ import {
   from,
   HttpLink,
   split,
-  NormalizedCacheObject,
-  FetchResult
+  NormalizedCacheObject
 } from "@apollo/client/core"
 import { WebSocketLink } from "@apollo/client/link/ws"
 import { getMainDefinition } from "@apollo/client/utilities"
 import fetch from "cross-fetch"
-import { Observable, SubscriptionClient } from "subscriptions-transport-ws"
+import { SubscriptionClient } from "subscriptions-transport-ws"
 import ws from "ws"
 
 export const createApolloClient = (
