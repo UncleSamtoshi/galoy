@@ -11,7 +11,11 @@ export const startServer = async (
     if (!serverPid) {
       const serverProcess = childProcess.spawn("make", ["start-server-ci"])
       serverPid = serverProcess.pid
+      serverProcess.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+      });
       serverProcess.stdout.on("data", (data) => {
+        console.log(`stdout: ${data}`);
         if (data.includes(serverStartMessage)) {
           resolve(serverPid)
         }
