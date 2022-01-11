@@ -19,11 +19,11 @@ start-admin:
 start: start-deps
 	make start-old & make start-new & make start-admin & make trigger
 
-trigger: start-deps
+trigger:
 	. ./.envrc && yarn tsnd --respawn --files -r tsconfig-paths/register -r src/services/tracing.ts \
 		src/servers/trigger.ts | yarn pino-pretty -c -l
 
-start-server-ci: start-deps
+start-server-ci:
 	make start-new & make trigger
 
 exporter: start-deps
