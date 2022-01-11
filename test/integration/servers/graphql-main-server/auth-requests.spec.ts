@@ -1,12 +1,5 @@
 import { yamlConfig } from "@config/app"
-import {
-  clearAccountLocks,
-  clearLimiters,
-  createInvoice,
-  lndOutside2,
-} from "test/helpers"
-import { createApolloClient } from "test/helpers/apollo-client"
-import { startServer, killServer } from "test/helpers/integration-server"
+
 import LN_INVOICE_CREATE from "./mutations/ln-invoice-create.gql"
 import LN_INVOICE_FEE_PROBE from "./mutations/ln-invoice-fee-probe.gql"
 import LN_INVOICE_PAYMENT_SEND from "./mutations/ln-invoice-payment-send.gql"
@@ -16,6 +9,15 @@ import LN_NO_AMOUNT_INVOICE_PAYMENT_SEND from "./mutations/ln-no-amount-invoice-
 import USER_LOGIN from "./mutations/user-login.gql"
 import ME from "./queries/me.gql"
 import MAIN from "./queries/main.gql"
+
+import { startServer, killServer } from "test/helpers/integration-server"
+import { createApolloClient } from "test/helpers/apollo-client"
+import {
+  clearAccountLocks,
+  clearLimiters,
+  createInvoice,
+  lndOutside2,
+} from "test/helpers"
 
 jest.mock("@services/twilio", () => require("test/mocks/twilio"))
 let apolloClient, disposeClient, walletId
@@ -46,7 +48,10 @@ afterAll(async () => {
 describe("graphql", () => {
   describe("main query", () => {
     it("returns valid data", async () => {
-      const { data } = await apolloClient.query({query: MAIN, variables: { hasToken: true } })
+      const { data } = await apolloClient.query({
+        query: MAIN,
+        variables: { hasToken: true },
+      })
       expect(data.globals).toBeTruthy()
       expect(data.me).toBeTruthy()
       expect(data.mobileVersions).toBeTruthy()

@@ -1,8 +1,10 @@
 import { yamlConfig, JWT_SECRET } from "@config/app"
 import * as jwt from "jsonwebtoken"
+
 import USER_REQUEST_AUTH_CODE from "./mutations/user-request-auth-code.gql"
 import USER_LOGIN from "./mutations/user-login.gql"
 import MAIN from "./queries/main.gql"
+
 import { clearAccountLocks, clearLimiters } from "test/helpers"
 import { startServer, killServer } from "test/helpers/integration-server"
 import { createApolloClient } from "test/helpers/apollo-client"
@@ -31,7 +33,10 @@ afterAll(async () => {
 describe("graphql", () => {
   describe("main query", () => {
     it("returns valid data", async () => {
-      const { data } = await apolloClient.query({query:MAIN, variables: { hasToken: false } })
+      const { data } = await apolloClient.query({
+        query: MAIN,
+        variables: { hasToken: false },
+      })
       expect(data.globals).toBeTruthy()
       expect(data.mobileVersions).toBeTruthy()
       expect(data.quizQuestions).toBeTruthy()
