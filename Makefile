@@ -23,8 +23,12 @@ trigger: start-deps
 	. ./.envrc && yarn tsnd --respawn --files -r tsconfig-paths/register -r src/services/tracing.ts \
 		src/servers/trigger.ts | yarn pino-pretty -c -l
 
+trigger-ci:
+	. ./.envrc && yarn tsnd --respawn --files -r tsconfig-paths/register -r src/services/tracing.ts \
+		src/servers/trigger.ts | yarn pino-pretty -c -l
+
 start-server-ci:
-	. ./.envrc && yarn build && node lib/servers/graphql-main-server.js | yarn pino-pretty -c -l & node lib/servers/trigger.js | yarn pino-pretty -c -l
+	make start-new & make trigger-ci
 
 exporter: start-deps
 	. ./.envrc && yarn tsnd --respawn --files -r tsconfig-paths/register -r src/services/tracing.ts \
